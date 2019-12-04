@@ -2,8 +2,8 @@ from numpy import *
 from matplotlib.pyplot import *
 import math
 
-Vo = 300         # m/s
-angle = 45       # degree
+Vo = 20         # m/s
+angle = 89.99       # degree
 g = 10          # m/s^2
 res = 0.24      # kg/m
 # res = 0      # kg/m
@@ -14,30 +14,24 @@ def degree_to_radian(angle):
 rad = degree_to_radian(angle)
 
 
-def foo_x(t):   
-    return Vo * math.cos(rad) / res * (1 - math.e**(-res  * t))
 
-def foo_y(t):
-    return (( Vo * math.sin(rad) + g) * (1 - math.e**(-res  * t)) - g*t)/res
-
-def time_to_back_on_earth():
-    return 2*Vo * math.sin(rad)/g
+def foo_y(x):
+    return (-1/2) * (g / (Vo**2 * math.cos(rad)**2) ) * x**2 + math.tan(rad) * x
 
 def throw_range():
-    return foo_x(time_to_back_on_earth())
+    return Vo**2 * math.sin(2*rad) / g
 
 
-t = linspace(0, time_to_back_on_earth(), 10000)    # 51 points between 0 and 3
 
-y = zeros(len(t))         # allocate y with float elements
-x = zeros(len(t))         # allocate y with float elements
+x = linspace(0, throw_range(), 10000)    # 51 points between 0 and 3
 
-for i in range(0,len(t)):
-    y[i] = foo_y(t[i])
-    x[i] = foo_x(t[i])
+y = zeros(len(x))         # allocate y with float elements
+
+for i in range(0,len(x)):
+    y[i] = foo_y(x[i])
 
 
-ylim(0,1.5*throw_range())
-xlim(0,1.5*throw_range())
+ylim(0, ( 1.5*throw_range() if angle < 80  else 1.1*Vo ) )
+xlim(0, ( 1.5*throw_range() if angle < 80  else 1.1*Vo ) )
 plot(x, y)
 show()
