@@ -51,11 +51,12 @@ def calcxy(v, dt, k, g, angle ):
         y.append(next_y)
         x.append(next_x)
 
+        vx = vx - k*vx*dt
+        vy = vy - g*dt - k*vy*dt
+
         if(y[-1] <= 0):
             stop = True
-        else:
-            vx = vx - k*vx*dt
-            vy = vy - g*dt - k*vy*dt
+
     return (x,y)
 
 
@@ -71,6 +72,7 @@ v = 80           # m/s
 angle = 45       # degree
 g = 10           # m/s^2
 k = 0.24         # kg/m
+
 dt = 0.01        # s
 
 
