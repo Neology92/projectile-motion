@@ -58,12 +58,6 @@ def calcxy(v, dt, k, g, angle ):
             vy = vy - g*dt - k*vy*dt
     return (x,y)
 
-def get_values(v, angle, g, k):
-    v = _input("Initial velocity: ", "velocity")
-    angle = _input("Throw angle: ", "angle")
-    g = _input("Earthly attraction: ", "gravity")
-    k = _input("Air resistance const: ", "air_resistance")
-
 
 ###############################
 # Zabezpieczyć przed wpisywaniem stringów!
@@ -73,13 +67,11 @@ def get_values(v, angle, g, k):
 ####################
 #       Init
 #------------------
-v = 100           # m/s
+v = 80           # m/s
 angle = 45       # degree
 g = 10           # m/s^2
 k = 0.24         # kg/m
 dt = 0.01        # s
-
-# get_values(v, angle, g, k)
 
 
 #==================== 
@@ -94,11 +86,13 @@ ax_v = axes([0.2, 0.17, 0.65, 0.03], facecolor=axcolor)
 ax_a = axes([0.2, 0.12, 0.65, 0.03], facecolor=axcolor)
 ax_g = axes([0.2, 0.07, 0.65, 0.03], facecolor=axcolor)
 ax_k = axes([0.2, 0.02, 0.65, 0.03], facecolor=axcolor)
+ax_none = axes([0, 0, 0.0, 0.0], facecolor=axcolor)
 
+s_v = Slider(ax_v, 'Velocity', 0.1, 80.0, valinit=v, valstep=0.01)
 s_a = Slider(ax_a, 'Angle', 0.1, 90.0, valinit=angle, valstep=0.1)
-s_v = Slider(ax_v, 'Velocity', 0.1, 100.0, valinit=v, valstep=0.1)
-s_g = Slider(ax_g, 'Gravity', 1, 100.0, valinit=g, valstep=0.1)
-s_k = Slider(ax_k, 'Air res', 0, 10.0, valinit=k, valstep=0.1)
+s_g = Slider(ax_g, 'Gravity', 5.0, 50.0, valinit=g, valstep=0.01)
+s_k = Slider(ax_k, 'Air res', 0, 1.0, valinit=k, valstep=0.001)
+s_none = Slider(ax_none, '', 0, 0.1, valinit=0, valstep=0.01)
 
 
 def update(val):
