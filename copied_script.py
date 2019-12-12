@@ -1,76 +1,51 @@
-from pylab import *
-import math
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.widgets import Slider, Button, RadioButtons
 
-# Physical constants
-g = 9.8
-m = 1.0
-rho = 1.0
-Cd = 1.0
-A = math.pi * pow(0.01,2.0)
-alpha = rho * Cd * A / 2.0
-beta = alpha / m
+fig, ax = plt.subplots()
+plt.subplots_adjust(left=0.25, bottom=0.25)
+t = np.arange(0.0, 1.0, 0.001)
+a0 = 5
+f0 = 3
+delta_f = 5.0
+s = a0 * np.sin(2 * np.pi * f0 * t)
+l, = plt.plot(t, s, lw=1)
+# ax.margins(x=0)
 
-# Initial conditions
-X0 = 1.0
-Y0 = 0.0
-Vx0 = 40.0
-Vy0 = 80.0
+axcolor = 'lightgoldenrodyellow'
+axfreq = plt.axes([0.25, 0.1, 0.65, 0.03], facecolor=axcolor)
+axamp = plt.axes([0.25, 0.15, 0.65, 0.03], facecolor=axcolor)
 
-# Time steps
-steps = 1000
-t_HIT = 2.0*Vy0/g
-dt = t_HIT / steps
+sfreq = Slider(axfreq, 'Freq', 0.1, 30.0, valinit=f0, valstep=delta_f)
+samp = Slider(axamp, 'Amp', 0.1, 10.0, valinit=a0)
 
-# No drag
-X_ND = list()
-Y_ND = list()
 
-for i in range(0, steps):
-  X_ND.append(X0 + Vx0 * dt * i)
-  Y_ND.append(Y0 + Vy0 * dt * i - 0.5 * g * pow(dt * i,2.0))
+def update(val):
+    amp = samp.val
+    freq = sfreq.val
+    l.set_ydata(amp*np.sin(2*np.pi*freq*t))
+    fig.canvas.draw_idle()
 
-# With drag
-X_WD = list()
-Y_WD = list()
-Vx_WD = list()
-Vy_WD = list()
 
-for i in range(0, steps):
-  X_ND.append(X0 + Vx0 * dt * i)
-  Y_ND.append(Y0 + Vy0 * dt * i - 0.5 * g * pow(dt * i,2.0))
+sfreq.on_changed(update)
+samp.on_changed(update)
 
-# With drag
-X_WD = list()
-Y_WD = list()
-Vx_WD = list()
-Vy_WD = list()
+resetax = plt.axes([0.8, 0.025, 0.1, 0.04])
+button = Button(resetax, 'Reset', color=axcolor, hovercolor='0.975')
 
-X_WD.append(X0)
-Y_WD.append(Y0)
-Vx_WD.append(Vx0)
-Vy_WD.append(Vy0)
 
-stop = 0
-for i in range(1,steps+1):
-  if stop != 1:
-    speed = (Vx_WD[i-1]**2.0 + Vy_WD[i-1]**2.0) ** 0.5
+def reset(event):
+    sfreq.reset()
+    samp.reset()
+button.on_clicked(reset)
 
-    # First calculate velocity
-    Vx_WD.append(Vx_WD[i-1] * (1.0 - beta * Vx_WD[i-1] * dt))
-    Vy_WD.append(Vy_WD[i-1] + ( - g - beta * Vy_WD[i-1] * Vy_WD[i-1]) * dt)
+rax = plt.axes([0.025, 0.5, 0.15, 0.15], facecolor=axcolor)
+radio = RadioButtons(rax, ('red', 'blue', 'green'), active=0)
 
-    # Now calculate position
-    X_WD.append(X_WD[i-1] + Vx_WD[i-1] * dt)
-    Y_WD.append(Y_WD[i-1] + Vy_WD[i-1] * dt)
 
-    # Stop if hits ground
-    if Y_WD[i] <= 0.0:
-      stop = 1
+def colorfunc(label):
+    l.set_color(label)
+    fig.canvas.draw_idle()
+radio.on_clicked(colorfunc)
 
-# Plot results
-
-ylim(0,max(max(Y_WD, X_WD)))
-xlim(0,max(max(Y_WD, X_WD)))
-plot(X_ND, Y_ND)
-plot(X_WD, Y_WD)
-show()
+plt.show()
